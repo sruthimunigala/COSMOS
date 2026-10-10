@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>COSMOS: Beyond Horizons — Interactive 3D Solar System & Deep Space Explorer</title>
+  <meta name="description" content="Explore the solar system and deep space in interactive 3D WebGL. Travel between planets, compare scales and distances, investigate moons and asteroids, and consult COSMOS AI.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- 3D WebGL Scene Viewport -->
+  <div id="viewport-container"></div>
+
+  <!-- Relativistic Warp Speed Streak Canvas Overlay -->
+  <canvas id="warp-canvas"></canvas>
+
+  <!-- Top Aerospace Navigation Bar -->
+  <header class="hud-navbar">
+    <div class="brand-section" id="brand-btn" title="Reset to Solar System Overview">
+      <div class="brand-logo-icon">🪐</div>
+      <div>
+        <div class="brand-title">COSMOS</div>
+        <div class="brand-subtitle">BEYOND HORIZONS // V2.4</div>
+      </div>
+    </div>
+
+    <!-- Search Celestial Catalog Bar -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" class="search-input" placeholder="Jump to world..." autocomplete="off">
+      <div id="search-results" class="search-results"></div>
+    </div>
+
+    <!-- Navigation Action Buttons -->
+    <div class="nav-actions">
+      <button class="nav-btn" id="nav-compare-btn">
+        <span>⚖️</span> Compare Scale & Void
+      </button>
+      <button class="nav-btn" id="nav-events-btn">
+        <span>📅</span> Space Events & Launches
+      </button>
+      <button class="audio-btn" id="audio-toggle-btn">
+        <span>🔇</span> Sound OFF
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Celestial Catalog Drawer Toggle Button -->
+  <button class="catalog-toggle-pill" id="catalog-toggle-btn">
+    <span>🧭</span> Celestial Manifest
+  </button>
+
+  <!-- Left Celestial Catalog Panel -->
+  <aside class="celestial-catalog-panel" id="celestial-catalog-panel">
+    <div class="catalog-header">
+      <h3>Celestial Manifest</h3>
+    </div>
+    <div class="catalog-content" id="catalog-content">
+      <!-- Populated dynamically by main.js -->
+    </div>
+  </aside>
+
+  <!-- Right Celestial Dossier Panel -->
+  <aside class="dossier-panel" id="dossier-panel">
+    <div class="dossier-header">
+      <div class="dossier-title-wrap">
+        <h2 id="dossier-title">Earth</h2>
+        <span class="dossier-type-tag" id="dossier-type">Terrestrial Planet</span>
+      </div>
+      <button class="btn-close-dossier" id="btn-close-dossier" title="Close Dossier">×</button>
+    </div>
+    <div class="dossier-body">
+      <p class="dossier-summary" id="dossier-summary"></p>
+
+      <div class="dossier-section-title">Telemetry & Physical Constants</div>
+      <div class="metrics-grid-2x2" id="dossier-metrics"></div>
+
+      <div class="dossier-fact-box" id="dossier-fact"></div>
+
+      <div class="dossier-actions">
+        <button class="btn-dossier-action" id="btn-dossier-compare">
+          <span>⚖️</span> Compare Scale
+        </button>
+        <button class="btn-dossier-action secondary" id="btn-dossier-ask-ai">
+          <span>🤖</span> Ask AI Officer
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Flight Telemetry Deck -->
+  <footer class="hud-bottom-deck">
+    <div class="deck-group">
+      <span class="deck-label">Temporal Warp</span>
+      <div class="time-slider-wrap">
+        <input type="range" id="time-slider" class="time-slider" min="0" max="20" step="0.5" value="1">
+        <span class="time-val" id="time-val">1.0x</span>
+      </div>
+    </div>
+
+    <div class="deck-divider"></div>
+
+    <div class="deck-group">
+      <button class="deck-btn active" id="btn-toggle-orbits" title="Toggle Celestial Orbit Rings">
+        <span>⭕</span> Orbits
+      </button>
+      <button class="deck-btn" id="btn-view-topdown" title="Polar Heliocentric Overview">
+        <span>🗺️</span> Top-Down
+      </button>
+      <button class="deck-btn" id="btn-view-reset" title="Return to Free Orbit Perspective">
+        <span>🎯</span> Reset Cam
+      </button>
+      <button class="deck-btn" id="btn-grand-tour" title="Automated Cinematic Grand Tour">
+        <span>🚀</span> Grand Tour
+      </button>
+    </div>
+  </footer>
+
+  <!-- Floating AI Copilot Widget -->
+  <div class="ai-widget-container">
+    <button class="ai-launcher-btn" id="ai-launcher-btn">
+      <span class="ai-pulse-dot" id="ai-voice-wave"></span>
+      <span>COSMOS AI Guide</span>
+    </button>
+
+    <div class="ai-chat-drawer" id="ai-chat-drawer">
+      <div class="ai-chat-header">
+        <div class="ai-header-info">
+          <span style="font-size: 18px;">🤖</span>
+          <div>
+            <h4 style="font-size: 14px; color: #fff;">COSMOS AI</h4>
+            <span style="font-size: 11px; color: #818cf8; font-family: monospace;">ASTROBIOLOGY & FLIGHT OFFICER</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="ai-voice-toggle-btn" id="ai-voice-toggle" title="Toggle Text-to-Speech Voice">
+            🔇 Voice OFF
+          </button>
+          <button class="btn-close-dossier" id="btn-close-ai" style="color: #94a3b8; font-size: 20px; cursor: pointer; border: none; background: transparent;">×</button>
+        </div>
+      </div>
+
+      <div class="ai-messages-area" id="ai-messages-area">
+        <!-- Messages stream here -->
+      </div>
+
+      <div class="ai-suggestions-row">
+        <div class="ai-chip" data-prompt="Fly me to Saturn and show its rings">🚀 Fly to Saturn</div>
+        <div class="ai-chip" data-prompt="Could there be life in Europa's oceans?">🌊 Life on Europa?</div>
+        <div class="ai-chip" data-prompt="Compare the size of Earth and Jupiter">⚖️ Earth vs Jupiter</div>
+        <div class="ai-chip" data-prompt="Why is Venus hotter than Mercury?">🔥 Hellish Venus</div>
+        <div class="ai-chip" data-prompt="Tell me about Asteroid 16 Psyche">💎 Metal Asteroid</div>
+        <div class="ai-chip" data-prompt="Show upcoming rocket launches">📅 Space Launches</div>
+      </div>
+
+      <div class="ai-input-bar">
+        <input type="text" id="ai-chat-input" class="ai-input" placeholder="Ask AI anything about the universe..." autocomplete="off">
+        <button class="btn-ai-send" id="btn-ai-send">Transmit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Planetary Size & Void Comparison -->
+  <div class="cosmos-modal-backdrop" id="modal-comparison">
+    <div class="cosmos-modal-box">
+      <div class="modal-header">
+        <h2>Planetary Scale & Cosmic Void Simulator</h2>
+        <button class="btn-close-modal" id="btn-close-comp-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="comp-selectors-bar">
+          <label style="font-size: 13px; color: #94a3b8; text-transform: uppercase;">Primary Body:</label>
+          <select id="select-body-a" class="comp-select"></select>
+          <span style="font-weight: bold; color: #ffb703;">COMPARED WITH</span>
+          <label style="font-size: 13px; color: #94a3b8; text-transform: uppercase;">Secondary Body:</label>
+          <select id="select-body-b" class="comp-select"></select>
+        </div>
+
+        <div id="comp-size-output"></div>
+        <div id="comp-dist-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Upcoming Space Events & Launches -->
+  <div class="cosmos-modal-backdrop" id="modal-events">
+    <div class="cosmos-modal-box">
+      <div class="modal-header">
+        <h2>Upcoming Space Events & Mission Calendar</h2>
+        <button class="btn-close-modal" id="btn-close-events-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="events-category-tabs">
+          <button class="cat-tab-btn active" data-cat="all">All Events</button>
+          <button class="cat-tab-btn" data-cat="launch">🚀 Rocket Launches</button>
+          <button class="cat-tab-btn" data-cat="skywatch">🔭 Skywatching & Eclipses</button>
+          <button class="cat-tab-btn" data-cat="mission">🛰️ Deep Space Missions</button>
+        </div>
+
+        <div id="events-countdown-hero"></div>
+
+        <div class="events-cards-grid" id="events-cards-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Toast Notification -->
+  <div class="cosmos-toast" id="cosmos-toast"></div>
+
+  <!-- Libraries -->
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="vendor/tween.umd.js"></script>
+
+  <!-- Application Modules -->
+  <script src="js/config.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/audioManager.js"></script>
+  <script src="js/solarSystem.js"></script>
+  <script src="js/cameraManager.js"></script>
+  <script src="js/scaleComparison.js"></script>
+  <script src="js/aiGuide.js"></script>
+  <script src="js/eventsCalendar.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

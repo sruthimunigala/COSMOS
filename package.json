@@ -1,0 +1,11 @@
+{
+  "name": "cosmos-beyond-horizons",
+  "version": "2.4.0",
+  "description": "Interactive 3D Solar System and Deep Space Explorer with AI Guide and Events Hub",
+  "main": "server.js",
+  "scripts": {
+    "start": "agy-node server.js"
+  },
+  "author": "Antigravity",
+  "license": "MIT"
+}
